@@ -23,9 +23,12 @@ const Mission = () => {
 
 const AboutScreen = () => {
   const [partners, setPartners] = useState(PARTNERS);
+
   return (
     <ScrollView>
       <Mission />
+
+      {/* Looping through partners array to render a card for each */}
       <Card>
         <Card.Title>Community Partners</Card.Title>
         <Card.Divider />
