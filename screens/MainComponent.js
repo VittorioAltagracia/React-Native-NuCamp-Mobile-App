@@ -1,5 +1,5 @@
 import { StyleSheet, Platform, View, Image, Text } from "react-native";
-import { Constants } from "expo-constants";
+import Constants from "expo-constants";
 import CampsiteInfoScreen from "./CampsiteInfoScreen";
 import DirectoryScreen from "./DirectoryScreen";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -11,6 +11,7 @@ import {
 import HomeScreen from "./HomeScreen";
 import AboutScreen from "./AboutScreen";
 import ContactScreen from "./ContactScreen";
+import ReservationScreen from "./ReservationScreen";
 import { Icon } from "react-native-elements";
 import logo from "../assets/images/logo.png";
 import { useDispatch } from "react-redux";
@@ -40,6 +41,29 @@ const HomeNavigator = () => {
           headerLeft: () => (
             <Icon
               name="home"
+              type="font-awesome"
+              iconStyle={styles.stackIcon}
+              onPress={() => navigation.toggleDrawer}
+            />
+          ),
+        })}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const ReservationNavigator = () => {
+  const Stack = createStackNavigator();
+  return (
+    <Stack.Navigator screenOptions={screenOptions}>
+      <Stack.Screen
+        name="Reservation"
+        component={ReservationScreen}
+        options={({ navigation }) => ({
+          title: "Reservation Search",
+          headerLeft: () => (
+            <Icon
+              name="tree"
               type="font-awesome"
               iconStyle={styles.stackIcon}
               onPress={() => navigation.toggleDrawer}
@@ -197,6 +221,22 @@ const Main = () => {
           }}
         />
         <Drawer.Screen
+          name="ReserveCampsite"
+          component={ReservationNavigator}
+          options={{
+            title: "Reserve Campsite",
+            drawerIcon: ({ color }) => (
+              <Icon
+                name="tree"
+                type="font-awesome"
+                size={24}
+                iconStyle={{ width: 24 }}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
           name="About"
           component={AboutNavigator}
           options={{
@@ -215,7 +255,6 @@ const Main = () => {
 
         <Drawer.Screen
           name="Contact"
-          options={{ title: "Contact Us" }}
           component={ContactNavigator}
           options={{
             title: "Contact Us",
