@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Image } from "react-native";
 import { CheckBox, Input, Button, Icon } from "react-native-elements";
 import * as SecureStore from "expo-secure-store";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as ImagePicker from "expo-image-picker";
+import { baseUrl } from "../shared/baseUrl";
+import logo from "../assets/images/logo.png";
 
 const LoginTab = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -51,7 +54,6 @@ const LoginTab = ({ navigation }) => {
       />
       <Input
         placeholder="Password"
-        secureTextEntry={true}
         leftIcon={{ type: "font-awesome", name: "key" }}
         onChangeText={(text) => setPassword(text)}
         value={password}
@@ -59,7 +61,7 @@ const LoginTab = ({ navigation }) => {
         leftIconContainerStyle={styles.formIcon}
       />
       <CheckBox
-        title="Remember me"
+        title="Remember Me"
         center
         checked={remember}
         onPress={() => setRemember(!remember)}
@@ -81,7 +83,6 @@ const LoginTab = ({ navigation }) => {
           buttonStyle={{ backgroundColor: "#5637DD" }}
         />
       </View>
-
       <View style={styles.formButton}>
         <Button
           onPress={() => navigation.navigate("Register")}
@@ -108,8 +109,8 @@ const RegisterTab = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-
   const [remember, setRemember] = useState(false);
+  const [imageUrl, setImageUrl] = useState(baseUrl + "images/logo.png");
 
   const handleRegister = () => {
     const userInfo = {
@@ -120,9 +121,7 @@ const RegisterTab = () => {
       email,
       remember,
     };
-
     console.log(JSON.stringify(userInfo));
-
     if (remember) {
       SecureStore.setItemAsync(
         "userinfo",
@@ -138,9 +137,32 @@ const RegisterTab = () => {
     }
   };
 
+  const getImageFromCamera = async () => {
+    const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (cameraPermission.status === "granted") {
+      const capturedImage = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+      });
+      if (capturedImage.assets) {
+        console.log(capturedImage.assets[0]);
+        setImageUrl(capturedImage.assets[0].uri);
+      }
+    }
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: imageUrl }}
+            loadingIndicatorSource={logo}
+            style={styles.image}
+          />
+          <Button title="Camera" onPress={getImageFromCamera} />
+        </View>
         <Input
           placeholder="Username"
           leftIcon={{ type: "font-awesome", name: "user-o" }}
@@ -151,7 +173,6 @@ const RegisterTab = () => {
         />
         <Input
           placeholder="Password"
-          secureTextEntry={true}
           leftIcon={{ type: "font-awesome", name: "key" }}
           onChangeText={(text) => setPassword(text)}
           value={password}
@@ -160,7 +181,6 @@ const RegisterTab = () => {
         />
         <Input
           placeholder="First Name"
-          secureTextEntry={true}
           leftIcon={{ type: "font-awesome", name: "user-o" }}
           onChangeText={(text) => setFirstName(text)}
           value={firstName}
@@ -169,7 +189,6 @@ const RegisterTab = () => {
         />
         <Input
           placeholder="Last Name"
-          secureTextEntry={true}
           leftIcon={{ type: "font-awesome", name: "user-o" }}
           onChangeText={(text) => setLastName(text)}
           value={lastName}
@@ -178,7 +197,6 @@ const RegisterTab = () => {
         />
         <Input
           placeholder="Email"
-          secureTextEntry={true}
           leftIcon={{ type: "font-awesome", name: "envelope-o" }}
           onChangeText={(text) => setEmail(text)}
           value={email}
@@ -186,7 +204,7 @@ const RegisterTab = () => {
           leftIconContainerStyle={styles.formIcon}
         />
         <CheckBox
-          title="Remember me"
+          title="Remember Me"
           center
           checked={remember}
           onPress={() => setRemember(!remember)}
@@ -218,7 +236,7 @@ const Tab = createBottomTabNavigator();
 const LoginScreen = () => {
   const tabBarOptions = {
     activeBackgroundColor: "#5637DD",
-    inactiveBackgroundColor: "#fff",
+    inactiveBackgroundColor: "#CEC8FF",
     activeTintColor: "#fff",
     inactiveTintColor: "#808080",
     labelStyle: { fontSize: 16 },
@@ -272,6 +290,17 @@ const styles = StyleSheet.create({
     margin: 20,
     marginRight: 40,
     marginLeft: 40,
+  },
+  imageContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    margin: 10,
+  },
+  image: {
+    width: 60,
+    height: 60,
   },
 });
 
